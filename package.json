@@ -1,6 +1,6 @@
 {
-  "name": "browser-extension-starter-typescript",
-  "description": "Starter template for browser extensions with WXT, React, TypeScript, Tailwind, and Biome",
+  "name": "github-copilot-comment-browser-extension",
+  "description": "Github Copilot PR review comment integration with modern IDEs",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -16,8 +16,10 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
+    "@wxt-dev/storage": "1.2.8",
     "react": "19.2.5",
-    "react-dom": "19.2.5"
+    "react-dom": "19.2.5",
+    "react-feather": "2.0.10"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.12",
