@@ -1,6 +1,6 @@
 {
   "name": "github-copilot-comment-browser-extension",
-  "description": "Github Copilot PR review comment integration with modern IDEs",
+  "description": "GitHub Copilot PR review comment integration with modern IDEs",
   "private": true,
   "version": "0.0.1",
   "type": "module",

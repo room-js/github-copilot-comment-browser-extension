@@ -22,13 +22,13 @@ This extension streamlines the loop:
 - Detects Copilot review comment action rows and injects extra IDE actions.
 - Builds prompt context from the review comment text and file path.
 - Supports configurable IDE targets:
-	- VS Code
-	- Cursor
+  - VS Code
+  - Cursor
 - Settings page with persistent per-IDE enable/disable toggles.
 - Popup shortcuts for:
-	- Opening extension settings
-	- Supporting the project
-	- Opening the project repository
+  - Opening extension settings
+  - Supporting the project
+  - Opening the project repository
 
 ## Store Links
 

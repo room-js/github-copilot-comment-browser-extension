@@ -22,7 +22,7 @@ function App() {
   return (
     <main className="flex w-120 flex-col items-center justify-center gap-2 bg-[#282c34] p-6 text-center text-[#f9f9f9]">
       <h1 className="m-0 text-[1.2rem] font-semibold">
-        Github PR Copilot Comments Enchancer
+        GitHub PR Copilot Comments Enhancer
       </h1>
       <button
         className={buttonClassName}

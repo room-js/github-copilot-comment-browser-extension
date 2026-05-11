@@ -13,23 +13,57 @@ export class CopilotCommentButtonEnhancer {
     'button[class*="prc-Button-ButtonBase-"]';
 
   private refreshTimer: number | undefined;
+  private readonly pendingRefreshRoots = new Set<ParentNode>();
+  private observer: MutationObserver | undefined;
 
   constructor(private readonly ideTargets: IdeTarget[]) {}
 
   run() {
     this.enhanceCopilotButtons();
-
-    const observer = new MutationObserver(() => {
-      this.queueRefresh();
-    });
-
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-    });
+    this.startObserver();
 
     window.addEventListener('popstate', () => {
+      this.startObserver();
       this.queueRefresh();
+    });
+  }
+
+  private handleMutations(mutations: MutationRecord[]) {
+    const roots: ParentNode[] = [];
+
+    for (const mutation of mutations) {
+      for (const node of Array.from(mutation.addedNodes)) {
+        if (node instanceof Element || node instanceof DocumentFragment) {
+          roots.push(node);
+        }
+      }
+    }
+
+    if (roots.length === 0) {
+      return;
+    }
+
+    this.queueRefresh(roots);
+  }
+
+  private resolveObserverRoot() {
+    return (
+      document.querySelector<HTMLElement>('.pull-discussion-timeline') ??
+      document.querySelector<HTMLElement>('main') ??
+      document.body ??
+      document.documentElement
+    );
+  }
+
+  private startObserver() {
+    this.observer?.disconnect();
+    this.observer = new MutationObserver((mutations) => {
+      this.handleMutations(mutations);
+    });
+
+    this.observer.observe(this.resolveObserverRoot(), {
+      childList: true,
+      subtree: true,
     });
   }
 
@@ -120,16 +154,45 @@ export class CopilotCommentButtonEnhancer {
     return row;
   }
 
-  private enhanceCopilotButtons() {
+  private findCommentContainers(roots: ParentNode[]) {
+    const containers = new Set<HTMLElement>();
+
+    for (const root of roots) {
+      if (root instanceof Element) {
+        if (
+          root.matches(CopilotCommentButtonEnhancer.COMMENT_CONTAINER_SELECTOR)
+        ) {
+          containers.add(root as HTMLElement);
+        }
+
+        for (const match of Array.from(
+          root.querySelectorAll<HTMLElement>(
+            CopilotCommentButtonEnhancer.COMMENT_CONTAINER_SELECTOR,
+          ),
+        )) {
+          containers.add(match);
+        }
+        continue;
+      }
+
+      for (const match of Array.from(
+        root.querySelectorAll<HTMLElement>(
+          CopilotCommentButtonEnhancer.COMMENT_CONTAINER_SELECTOR,
+        ),
+      )) {
+        containers.add(match);
+      }
+    }
+
+    return Array.from(containers);
+  }
+
+  private enhanceCopilotButtons(roots: ParentNode[] = [document]) {
     if (!this.isPullRequestPage()) {
       return;
     }
 
-    const commentContainers = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        CopilotCommentButtonEnhancer.COMMENT_CONTAINER_SELECTOR,
-      ),
-    );
+    const commentContainers = this.findCommentContainers(roots);
 
     for (const container of commentContainers) {
       const commentText = this.extractCommentText(container);
@@ -164,13 +227,22 @@ export class CopilotCommentButtonEnhancer {
     }
   }
 
-  private queueRefresh() {
+  private queueRefresh(roots: ParentNode[] = [document]) {
+    for (const root of roots) {
+      this.pendingRefreshRoots.add(root);
+    }
+
     if (this.refreshTimer) {
       window.clearTimeout(this.refreshTimer);
     }
 
     this.refreshTimer = window.setTimeout(() => {
-      this.enhanceCopilotButtons();
+      const refreshRoots =
+        this.pendingRefreshRoots.size > 0
+          ? Array.from(this.pendingRefreshRoots)
+          : [document];
+      this.pendingRefreshRoots.clear();
+      this.enhanceCopilotButtons(refreshRoots);
     }, 150);
   }
 }

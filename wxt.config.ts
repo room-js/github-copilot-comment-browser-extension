@@ -4,7 +4,7 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
-    name: 'Github PR Copilot Comments Enchancer',
+    name: 'GitHub PR Copilot Comments Enhancer',
     short_name: 'gh-pr-cc-enh',
     permissions: ['storage'],
     browser_specific_settings: {
