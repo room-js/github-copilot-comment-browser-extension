@@ -1,4 +1,4 @@
-# GitHub PR Copilot Comment Enhancer
+# GitHub PR Copilot Comments Enhancer
 
 A browser extension that improves the GitHub pull request review workflow by adding one-click actions next to Copilot review comments.
 
@@ -14,7 +14,7 @@ This extension streamlines the loop:
 2. Click `Fix in VS Code` or `Fix in Cursor` directly from the comment.
 3. Continue implementation in your local IDE with the prompt already prepared.
 
-![GitHub PR Copilot Comment Enhancer Screenshot](./docs/screenshot.png)
+![GitHub PR Copilot Comments Enhancer Screenshot](./docs/screenshot.png)
 
 ## Features
 
@@ -41,8 +41,8 @@ This extension streamlines the loop:
 - It looks for Copilot comment containers and `Fix with Copilot` buttons.
 - For each configured IDE, it injects a matching action button.
 - Clicking an action opens an IDE deeplink with the generated prompt:
-	- VS Code via `vscode://GitHub.Copilot-Chat?...`
-	- Cursor via `cursor://anysphere.cursor-deeplink/prompt?...`
+  - VS Code via `vscode://GitHub.Copilot-Chat?...`
+  - Cursor via `cursor://anysphere.cursor-deeplink/prompt?...`
 
 The enabled IDE list is stored in extension storage and controlled from the options page.
 

@@ -107,7 +107,7 @@ export class CopilotCommentButtonEnhancer {
   }
 
   private createIdeButton(
-    anchorButton: HTMLElement,
+    anchorButton: HTMLElement | undefined,
     target: IdeTarget,
     href: string,
   ) {
@@ -117,15 +117,23 @@ export class CopilotCommentButtonEnhancer {
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
 
-    for (const attribute of Array.from(anchorButton.attributes)) {
-      if (attribute.name.startsWith('data-')) {
-        link.setAttribute(attribute.name, attribute.value);
+    if (anchorButton) {
+      for (const attribute of Array.from(anchorButton.attributes)) {
+        if (attribute.name.startsWith('data-')) {
+          link.setAttribute(attribute.name, attribute.value);
+        }
       }
+
+      link.className = anchorButton.className;
     }
 
     link.setAttribute(`data-fix-in-${target.id}-injected`, 'true');
-    link.className = anchorButton.className;
     link.setAttribute('aria-label', target.ariaLabel);
+    link.style.width = 'auto';
+    link.style.border = 'var(--borderWidth-thin,.0625rem) solid';
+    link.style.borderColor = 'var(--button-default-borderColor-rest, #d1d9e0)';
+    link.style.borderRadius = 'var(--borderRadius-medium, .375rem)';
+    link.style.color = 'var(--button-default-fgColor-rest, #25292e)';
     return link;
   }
 
@@ -151,6 +159,32 @@ export class CopilotCommentButtonEnhancer {
     parent.insertBefore(row, button);
     row.appendChild(button);
 
+    return row;
+  }
+
+  private ensureFallbackButtonRow(container: HTMLElement) {
+    const existingRow = container.querySelector<HTMLElement>(
+      '[data-fix-in-button-row="true"]',
+    );
+    if (existingRow) {
+      return existingRow;
+    }
+
+    const commentBody = container.querySelector<HTMLElement>(
+      CopilotCommentButtonEnhancer.COMMENT_BODY_SELECTOR,
+    );
+    if (!commentBody?.parentElement) {
+      return undefined;
+    }
+
+    const row = document.createElement('div');
+    row.setAttribute('data-fix-in-button-row', 'true');
+    row.style.display = 'inline-flex';
+    row.style.alignItems = 'center';
+    row.style.gap = '8px';
+    row.style.marginTop = '8px';
+
+    commentBody.insertAdjacentElement('afterend', row);
     return row;
   }
 
@@ -196,6 +230,10 @@ export class CopilotCommentButtonEnhancer {
 
     for (const container of commentContainers) {
       const commentText = this.extractCommentText(container);
+      if (commentText.length === 0) {
+        continue;
+      }
+
       const filePath = this.extractFilePath(container);
       const prompt = this.buildPrompt(commentText, filePath);
       const actionButtons = Array.from(
@@ -204,25 +242,30 @@ export class CopilotCommentButtonEnhancer {
         ),
       );
 
-      for (const button of actionButtons) {
-        if (
-          this.normalizeText(button.textContent) !==
-          CopilotCommentButtonEnhancer.BUTTON_TEXT
-        ) {
+      const copilotButton = actionButtons.find(
+        (button) =>
+          this.normalizeText(button.textContent) ===
+          CopilotCommentButtonEnhancer.BUTTON_TEXT,
+      );
+
+      const buttonRow = copilotButton
+        ? this.ensureButtonRow(copilotButton)
+        : this.ensureFallbackButtonRow(container);
+      if (!buttonRow) {
+        continue;
+      }
+
+      const anchorButton = copilotButton ?? actionButtons[0];
+
+      for (const target of this.ideTargets) {
+        const injectedAttr = `data-fix-in-${target.id}-injected`;
+        if (buttonRow.querySelector(`[${injectedAttr}="true"]`)) {
           continue;
         }
 
-        for (const target of this.ideTargets) {
-          const injectedAttr = `data-fix-in-${target.id}-injected`;
-          const buttonRow = this.ensureButtonRow(button);
-          if (buttonRow?.querySelector(`[${injectedAttr}="true"]`)) {
-            continue;
-          }
-
-          const href = target.buildHref(prompt);
-          const ideButton = this.createIdeButton(button, target, href);
-          buttonRow?.appendChild(ideButton);
-        }
+        const href = target.buildHref(prompt);
+        const ideButton = this.createIdeButton(anchorButton, target, href);
+        buttonRow.appendChild(ideButton);
       }
     }
   }

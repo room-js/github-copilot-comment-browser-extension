@@ -3,8 +3,13 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
-    "types": ["chrome"]
   },
-  "include": ["**/*", ".wxt/wxt.d.ts", "@types/**/*.d.ts"],
-  "exclude": [".output"]
+  "include": [
+    "**/*",
+    ".wxt/wxt.d.ts",
+    "@types/**/*.d.ts"
+  ],
+  "exclude": [
+    ".output"
+  ]
 }
