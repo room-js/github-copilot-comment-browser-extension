@@ -57,11 +57,13 @@ export class CopilotCommentButtonEnhancer {
 
   private startObserver() {
     this.observer?.disconnect();
+    const root = this.resolveObserverRoot();
+
     this.observer = new MutationObserver((mutations) => {
       this.handleMutations(mutations);
     });
 
-    this.observer.observe(this.resolveObserverRoot(), {
+    this.observer.observe(root, {
       childList: true,
       subtree: true,
     });

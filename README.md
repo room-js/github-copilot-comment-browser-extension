@@ -4,6 +4,12 @@ A browser extension that improves the GitHub pull request review workflow by add
 
 When GitHub shows a `Fix with Copilot` action, this extension injects additional IDE-specific buttons so you can send the review prompt directly into your preferred editor chat.
 
+## How to Install
+
+Find it in your browser's extensions marketplace:
+- Google Chrome - [Chrome Web Store](https://chromewebstore.google.com/detail/bmplpkpnichmnakibdcpgkcndabinkdl?utm_source=item-share-cb)
+- Mozilla Firefox - [Firefox Add-ons](#) (to be published shortly...)
+
 ## Why This Extension
 
 GitHub Copilot review comments are useful, but switching context and manually copying feedback into your editor is repetitive.
@@ -29,11 +35,6 @@ This extension streamlines the loop:
   - Opening extension settings
   - Supporting the project
   - Opening the project repository
-
-## Store Links
-
-- Chrome Web Store: `TBD`
-- Firefox Add-ons: `TBD`
 
 ## How It Works
 
