@@ -1,8 +1,8 @@
 {
   "name": "github-copilot-comment-browser-extension",
-  "description": "GitHub Copilot PR review comment integration with modern IDEs",
+  "description": "Add one-click IDE actions to GitHub pull request Copilot comments that open VS Code or Cursor with a prepared prompt",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "wxt",
