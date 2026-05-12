@@ -1,9 +1,7 @@
 import { Coffee, GitHub, Settings } from 'react-feather';
+import { PROJECT_GITHUB_URL, SUPPORT_PROJECT_URL } from '../lib/projectLinks';
 
 function App() {
-  const SUPPORT_PROJECT_URL = 'https://buymeacoffee.com/roomjs';
-  const PROJECT_GITHUB_URL =
-    'https://github.com/room-js/github-copilot-comment-browser-extension';
   const buttonClassName =
     'mt-3 inline-flex items-center gap-2 cursor-pointer rounded-lg border border-[#8fda25] bg-[#258dfa] px-3 py-2 text-[0.9rem] font-semibold text-[#f9f9f9] transition-colors hover:bg-[#8fda25] hover:text-[#282c34]';
 

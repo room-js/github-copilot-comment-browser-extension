@@ -1,6 +1,6 @@
 {
   "name": "github-copilot-comment-browser-extension",
-  "description": "Add one-click IDE actions to GitHub pull request Copilot comments so you can send fixes directly to VS Code or Cursor",
+  "description": "Add one-click IDE actions to GitHub pull request Copilot comments that open VS Code or Cursor with a prepared prompt",
   "private": true,
   "version": "0.0.2",
   "type": "module",
