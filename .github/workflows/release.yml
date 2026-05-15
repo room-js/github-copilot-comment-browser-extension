@@ -101,8 +101,8 @@ jobs:
         continue-on-error: true
         uses: browser-actions/release-firefox-addon@latest
         with:
-          addon-id: "investorean-stocks-etfs-crypto"
-          license: "MPL-2.0"
+          addon-id: "github-pr-copilot-comments"
+          license: "MIT"
           addon-path: ${{ steps.firefox_addon.outputs.addon_path }}
           source-path: ${{ steps.firefox_addon.outputs.source_path }}
           release-note: |
