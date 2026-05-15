@@ -8,7 +8,7 @@ When GitHub shows a `Fix with Copilot` action, this extension injects additional
 
 Find it in your browser's extensions marketplace:
 - Google Chrome - [Chrome Web Store](https://chromewebstore.google.com/detail/bmplpkpnichmnakibdcpgkcndabinkdl?utm_source=item-share-cb)
-- Mozilla Firefox - [Firefox Add-ons](#) (to be published shortly...)
+- Mozilla Firefox - [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/github-pr-copilot-comments/)
 
 ## Why This Extension
 
