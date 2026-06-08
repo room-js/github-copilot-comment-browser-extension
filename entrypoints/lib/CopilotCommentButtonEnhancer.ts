@@ -102,7 +102,7 @@ export class CopilotCommentButtonEnhancer {
   private buildPrompt(commentText: string, filePath: string) {
     const parts: string[] = [];
     if (filePath.length > 0) {
-      parts.push(`#filePath:${filePath}`);
+      parts.push(`#file:${filePath}`);
     }
     parts.push(commentText);
     return parts.join('\n');
