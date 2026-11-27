@@ -38,7 +38,7 @@ This extension streamlines the loop:
 
 ## How It Works
 
-- A content script monitors GitHub PR pages.
+- A content script loads on GitHub and enhances PR pages, including PRs opened through GitHub's client-side navigation.
 - It looks for Copilot comment containers and `Fix with Copilot` buttons.
 - For each configured IDE, it injects a matching action button.
 - Clicking an action opens an IDE deeplink with the generated prompt:
@@ -130,6 +130,6 @@ This extension is designed to keep your data local and minimal.
 ### Permissions
 
 - `storage`: used only to persist extension settings.
-- Host matching for GitHub pull requests: used only to run the content script on matching PR pages.
+- Host matching for GitHub: loads the content script so it can detect navigation to a PR without a full page load. Comment enhancement runs only on PR pages.
 
 If you have privacy questions, open an issue in this repository.
