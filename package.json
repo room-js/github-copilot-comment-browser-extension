@@ -2,8 +2,9 @@
   "name": "github-copilot-comment-browser-extension",
   "description": "Add one-click IDE actions to GitHub pull request Copilot comments that open VS Code or Cursor with a prepared prompt",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
+  "packageManager": "pnpm@11.29.0",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
@@ -16,21 +17,21 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@wxt-dev/storage": "1.2.8",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
+    "@wxt-dev/storage": "1.4.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-feather": "2.0.10"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.12",
-    "@tailwindcss/postcss": "4.1.14",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
+    "@biomejs/biome": "2.6.9",
+    "@tailwindcss/postcss": "4.3.5",
+    "@types/react": "19.3.3",
+    "@types/react-dom": "19.3.0",
     "@wxt-dev/module-react": "1.2.2",
-    "autoprefixer": "10.5.0",
-    "postcss": "8.5.10",
-    "tailwindcss": "4.2.2",
-    "typescript": "6.0.3",
-    "wxt": "0.20.25"
+    "autoprefixer": "10.7.0",
+    "postcss": "8.5.33",
+    "tailwindcss": "4.3.5",
+    "typescript": "7.0.2",
+    "wxt": "0.21.5"
   }
 }

@@ -3,14 +3,17 @@ import type { IdeTarget } from './ideConfig';
 export class CopilotCommentButtonEnhancer {
   private static readonly BUTTON_TEXT = 'Fix with Copilot';
 
+  private static readonly AUTOMATED_COMMENT_SELECTOR =
+    '[data-testid="automated-review-comment"]';
+
   private static readonly COMMENT_CONTAINER_SELECTOR =
-    'div[class*="AutomatedReviewThreadComment-module__automatedComment__body_"]';
+    `${CopilotCommentButtonEnhancer.AUTOMATED_COMMENT_SELECTOR}, ` +
+    '[class*="AutomatedReviewThreadComment-module__automatedComment__body"]';
 
   private static readonly COMMENT_BODY_SELECTOR =
-    'div[class*="AutomatedReviewThreadComment-module__automatedComment__content_"]';
+    '[class*="automatedComment__content"]';
 
-  private static readonly BUTTON_SELECTOR =
-    'button[class*="prc-Button-ButtonBase-"]';
+  private static readonly BUTTON_SELECTOR = 'button';
 
   private refreshTimer: number | undefined;
   private readonly pendingRefreshRoots = new Set<ParentNode>();
@@ -23,15 +26,25 @@ export class CopilotCommentButtonEnhancer {
     this.startObserver();
 
     window.addEventListener('popstate', () => {
-      this.startObserver();
       this.queueRefresh();
     });
+    document.addEventListener('turbo:load', () => this.queueRefresh());
   }
 
   private handleMutations(mutations: MutationRecord[]) {
     const roots: ParentNode[] = [];
 
     for (const mutation of mutations) {
+      // GitHub often fills an existing comment body after mounting its container.
+      // Include the enclosing comment even when only text or a child is added.
+      const target =
+        mutation.target instanceof Element
+          ? mutation.target
+          : mutation.target.parentElement;
+      if (target) {
+        roots.push(target);
+      }
+
       for (const node of Array.from(mutation.addedNodes)) {
         if (node instanceof Element || node instanceof DocumentFragment) {
           roots.push(node);
@@ -46,25 +59,17 @@ export class CopilotCommentButtonEnhancer {
     this.queueRefresh(roots);
   }
 
-  private resolveObserverRoot() {
-    return (
-      document.querySelector<HTMLElement>('.pull-discussion-timeline') ??
-      document.querySelector<HTMLElement>('main') ??
-      document.body ??
-      document.documentElement
-    );
-  }
-
   private startObserver() {
     this.observer?.disconnect();
-    const root = this.resolveObserverRoot();
 
     this.observer = new MutationObserver((mutations) => {
       this.handleMutations(mutations);
     });
 
-    this.observer.observe(root, {
+    // Timelines and <main> are replaced during GitHub's client-side navigation.
+    this.observer.observe(document.documentElement, {
       childList: true,
+      characterData: true,
       subtree: true,
     });
   }
@@ -195,10 +200,11 @@ export class CopilotCommentButtonEnhancer {
 
     for (const root of roots) {
       if (root instanceof Element) {
-        if (
-          root.matches(CopilotCommentButtonEnhancer.COMMENT_CONTAINER_SELECTOR)
-        ) {
-          containers.add(root as HTMLElement);
+        const enclosingComment = root.closest<HTMLElement>(
+          CopilotCommentButtonEnhancer.COMMENT_CONTAINER_SELECTOR,
+        );
+        if (enclosingComment) {
+          containers.add(enclosingComment);
         }
 
         for (const match of Array.from(
@@ -220,7 +226,18 @@ export class CopilotCommentButtonEnhancer {
       }
     }
 
-    return Array.from(containers);
+    // Older markup can match both the outer comment and its nested body.
+    return Array.from(
+      new Set(
+        Array.from(
+          containers,
+          (container) =>
+            container.closest<HTMLElement>(
+              CopilotCommentButtonEnhancer.AUTOMATED_COMMENT_SELECTOR,
+            ) ?? container,
+        ),
+      ),
+    );
   }
 
   private enhanceCopilotButtons(roots: ParentNode[] = [document]) {
@@ -257,15 +274,27 @@ export class CopilotCommentButtonEnhancer {
         continue;
       }
 
-      const anchorButton = copilotButton ?? actionButtons[0];
+      const anchorButton =
+        copilotButton ??
+        actionButtons.find(
+          (button) =>
+            button.getAttribute('data-component') !== 'IconButton' &&
+            this.normalizeText(button.textContent).length > 0,
+        );
 
       for (const target of this.ideTargets) {
         const injectedAttr = `data-fix-in-${target.id}-injected`;
-        if (buttonRow.querySelector(`[${injectedAttr}="true"]`)) {
+        const href = target.buildHref(prompt);
+        const existingButton = buttonRow.querySelector<HTMLAnchorElement>(
+          `[${injectedAttr}="true"]`,
+        );
+        if (existingButton) {
+          if (existingButton.getAttribute('href') !== href) {
+            existingButton.href = href;
+          }
           continue;
         }
 
-        const href = target.buildHref(prompt);
         const ideButton = this.createIdeButton(anchorButton, target, href);
         buttonRow.appendChild(ideButton);
       }
@@ -277,11 +306,12 @@ export class CopilotCommentButtonEnhancer {
       this.pendingRefreshRoots.add(root);
     }
 
-    if (this.refreshTimer) {
-      window.clearTimeout(this.refreshTimer);
+    if (this.refreshTimer !== undefined) {
+      return;
     }
 
     this.refreshTimer = window.setTimeout(() => {
+      this.refreshTimer = undefined;
       const refreshRoots =
         this.pendingRefreshRoots.size > 0
           ? Array.from(this.pendingRefreshRoots)
